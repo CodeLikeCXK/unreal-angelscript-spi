@@ -1,17 +1,21 @@
 event void FUpdateHealthEvent(float Percent);
+event void FUpdateHealthPointEvent(float Healthpoint);
 event void FUpdateScoreEvent();
+
 
 class UHudWidget: UUserWidget
 {
     private int VScore = 0;
     private UProgressBar Health;
+    private UTextBlock HealthCount;
     private UTextBlock Score;
 
     UFUNCTION()
-    void RegisterComponents(UProgressBar Health, UTextBlock Score)
+    void RegisterComponents(UProgressBar Health, UTextBlock Score, UTextBlock HealthCount)
     {
         this.Health = Health;
         this.Score = Score;
+        this.HealthCount = HealthCount;
         this.Health.SetPercent(1.f);
     }
 
@@ -20,6 +24,13 @@ class UHudWidget: UUserWidget
     {
         this.Health.SetPercent(Percent);
     }
+
+  //  UFUNCTION()
+  //  void UpdateHealthPoint(float HealthPoint)
+ //   {
+ //       float HealthNum = HealthPoint;
+//        this.HealthCount.Text = FText::FromString("Health: " + HealthNum); 
+//    }
 
     UFUNCTION()
     void UpdateScore()
@@ -73,16 +84,21 @@ class SpaceGameMode: AGameModeBase
 
     FUpdateHealthEvent HealthEvent;
     FUpdateScoreEvent ScoreEvent;
+    FUpdateHealthPointEvent HealthPointEvent;
     APlayerController Player;
+
+    UPROPERTY(BlueprintReadWrite)
+    float ScorePerEnemy = 100.f;
 
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
         Player = Gameplay::GetPlayerController(0);
-        WidgetBlueprint::SetInputMode_GameOnly(Player);
         HudWidget = Cast<UHudWidget>(WidgetBlueprint::CreateWidget(Hud, Player));
         HudWidget.AddToViewport();
+        Widget::SetInputMode_GameOnly(Player);
         HealthEvent.AddUFunction(HudWidget, n"UpdateHealth");
+      //  HealthPointEvent.AddUFunction(HudWidget, n"UpdateHealthPoint");
         ScoreEvent.AddUFunction(HudWidget, n"UpdateScore");
     }
 
@@ -91,7 +107,7 @@ class SpaceGameMode: AGameModeBase
         GameOverWidget = Cast<UGameOverWidget>(WidgetBlueprint::CreateWidget(GameoverCls, Player));
         GameOverWidget.Player = Player;
         Player.bShowMouseCursor = true;
-        WidgetBlueprint::SetInputMode_UIOnlyEx(Player, InWidgetToFocus = GameOverWidget);
+        Widget::SetInputMode_UIOnlyEx(Player, InWidgetToFocus = GameOverWidget);
         GameOverWidget.AddToViewport();
     }
 

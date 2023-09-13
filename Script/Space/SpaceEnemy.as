@@ -1,8 +1,7 @@
-import Space.SpaceActorBase;
-import SpaceGameMode;
-
-event void FEnemyFireEvent(int squadId);
 event void FSquadUpdateEvent(int squadId);
+event void FEnemyFireEvent(int squadId);
+
+
 class SpaceEnemy: ASpaceActorBase
 {
     int squadId = 0;
@@ -15,11 +14,18 @@ class SpaceEnemy: ASpaceActorBase
     default ActorMesh.WorldScale3D = FVector(0.7f, 0.7f, 0.7f);
     default ProjectileSpawn.WorldLocation = FVector(0.f, 0.f, -20.f);
 
+
+
+ 
     FSquadUpdateEvent UpdateGunship;
     FEnemyFireEvent FireEvent;
 
     UPROPERTY(NotEditable, BlueprintReadOnly)
     FVector OriginalPosition;
+
+     APawn player = Gameplay::GetPlayerPawn(0);
+     SpacePlayerCharacter playerActor = Cast<SpacePlayerCharacter>(player);
+
 
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
@@ -32,11 +38,10 @@ class SpaceEnemy: ASpaceActorBase
     {
         HorizontalSpeed = Movement.Velocity();
 
-        APawn player = Gameplay::GetPlayerPawn(0);
         if (System::IsValid(player)){
             FVector playerLocation = player.GetActorLocation();
             FVector selfLocation = GetActorLocation();
-            distanceX = FMath::Abs(selfLocation.X - playerLocation.X);
+            distanceX = Math::Abs(selfLocation.X - playerLocation.X);
         }
         else
         {
@@ -65,5 +70,11 @@ class SpaceEnemy: ASpaceActorBase
     {
         UpdateGunship.Broadcast(squadId);
         GameMode.ScoreEvent.Broadcast();
+        playerActor.Health += 20.f;
+        auto TGameMode = GameMode;
+        TGameMode.HealthPointEvent.Broadcast(playerActor.Health);
+        TGameMode.HealthEvent.Broadcast(playerActor.Health / playerActor.MaxHealth);
+
+        
     }
 };

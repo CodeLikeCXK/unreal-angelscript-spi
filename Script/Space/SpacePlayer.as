@@ -1,6 +1,3 @@
-import Space.SpaceActorBase;
-import SpaceGameMode;
-
 class SpacePlayerCharacter: ASpaceActorBase
 {
     private SpaceGameMode GameMode;
@@ -9,11 +6,14 @@ class SpacePlayerCharacter: ASpaceActorBase
     private    float VDeltaSeconds;
     private    float Speed = 2.f;
 
-    private float MaxHealth = 300.f;
+    float MaxHealth = 300.f;
     default Health = MaxHealth;
 
     UPROPERTY(DefaultComponent)
     UInputComponent ScriptInputComponent;
+
+    UPROPERTY(BlueprintReadWrite, Category = "Fire")
+    float FireTime = 0.2f;
 
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
@@ -30,7 +30,7 @@ class SpacePlayerCharacter: ASpaceActorBase
     void OnFirePressed(FKey Key)
     {
         PrimaryFire();
-        FireTimerHandle = System::SetTimer(this, n"PrimaryFire", 0.2f, true);
+        FireTimerHandle = System::SetTimer(this, n"PrimaryFire", FireTime, true);
     }
 
     UFUNCTION()
@@ -46,19 +46,24 @@ class SpacePlayerCharacter: ASpaceActorBase
         FRotator rotation = GetActorRotation();
         FRotator TargetRotator(0.f,  HorizontalSpeed * -10.f, 0.f);
 
-        FRotator DeltaRotation = FMath::RInterpConstantTo(rotation, TargetRotator, DeltaSeconds, 80.f);
+        FRotator DeltaRotation = Math::RInterpConstantTo(rotation, TargetRotator, DeltaSeconds, 80.f);
         SetActorRotation(DeltaRotation);
 
         Super::Tick(DeltaSeconds);
+
+        if(Health > MaxHealth + 150)
+        {
+            Health = MaxHealth;
+        }
     }
 
     void HorizontalMove(float Direction)
     {
-        HorizontalSpeed = FMath::FInterpConstantTo(HorizontalSpeed, Direction * Speed, VDeltaSeconds, 6.0f);
+        HorizontalSpeed = Math::FInterpConstantTo(HorizontalSpeed, Direction * Speed, VDeltaSeconds, 6.0f);
     }
 
     UFUNCTION()
-    void OnMoveRightAxisChanged(float AxisValue)
+    void OnMoveRightAxisChanged(float32 AxisValue)
     {
         HorizontalMove(AxisValue);
     }
@@ -70,6 +75,7 @@ class SpacePlayerCharacter: ASpaceActorBase
         auto TGameMode = GameMode;
         Super::AnyDamage(Damage, DamageType, InstigatedBy, DamageCauser);
         TGameMode.HealthEvent.Broadcast(Health / MaxHealth);
+        TGameMode.HealthPointEvent.Broadcast(Health);
         if (Health <= 0.f)
         {
             TGameMode.Gameover();

@@ -1,4 +1,3 @@
-import Space.SpaceProjectile;
 
 class AEnemyMovement: UActorComponent{
     float Direction = 1.f;
@@ -62,7 +61,7 @@ class ASpaceActorBase: APawn
         FVector target(HorizontalSpeed, 0.f, 0.f);
         FVector TargetLocation = location + target;
 
-        if (FMath::Abs(TargetLocation.X) < 500.f )
+        if (Math::Abs(TargetLocation.X) < 500.f )
         {
             FHitResult SweepResult;
             SetActorLocation(TargetLocation, true, SweepResult, false);
@@ -111,6 +110,7 @@ class ASpaceActorBase: APawn
             if (Health <= 0.f)
             {
                 DestroyActor();
+                
 
             }
         }

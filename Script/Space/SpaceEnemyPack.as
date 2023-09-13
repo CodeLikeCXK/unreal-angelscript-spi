@@ -1,5 +1,3 @@
-import Space.SpaceEnemy;
-
 UCLASS(Abstract)
 class AEnemyPack: AActor
 {
