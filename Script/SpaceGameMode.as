@@ -25,12 +25,12 @@ class UHudWidget: UUserWidget
         this.Health.SetPercent(Percent);
     }
 
-  //  UFUNCTION()
-  //  void UpdateHealthPoint(float HealthPoint)
- //   {
- //       float HealthNum = HealthPoint;
-//        this.HealthCount.Text = FText::FromString("Health: " + HealthNum); 
-//    }
+    UFUNCTION()
+    void UpdateHealthPoint(float HealthPoint)
+   {
+       float HealthNum = HealthPoint;
+       this.HealthCount.Text = FText::FromString("Health: " + HealthNum); 
+   }
 
     UFUNCTION()
     void UpdateScore()
@@ -98,7 +98,7 @@ class SpaceGameMode: AGameModeBase
         HudWidget.AddToViewport();
         Widget::SetInputMode_GameOnly(Player);
         HealthEvent.AddUFunction(HudWidget, n"UpdateHealth");
-      //  HealthPointEvent.AddUFunction(HudWidget, n"UpdateHealthPoint");
+        HealthPointEvent.AddUFunction(HudWidget, n"UpdateHealthPoint");
         ScoreEvent.AddUFunction(HudWidget, n"UpdateScore");
     }
 

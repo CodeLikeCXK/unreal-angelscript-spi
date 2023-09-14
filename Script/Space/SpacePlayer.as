@@ -24,6 +24,12 @@ class SpacePlayerCharacter: ASpaceActorBase
         ScriptInputComponent.BindAction(n"Fire", EInputEvent::IE_Released, FInputActionHandlerDynamicSignature(this, n"OnFireReleased"));
 
         ScriptInputComponent.BindAxis(n"MoveRight", FInputAxisHandlerDynamicSignature(this, n"OnMoveRightAxisChanged"));
+
+        auto TGameMode = GameMode;
+        TGameMode.HealthPointEvent.Broadcast(Health);
+
+
+        
     }
 
     UFUNCTION()
